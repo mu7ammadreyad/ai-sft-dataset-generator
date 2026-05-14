@@ -1,0 +1,35 @@
+name: Generate Dataset Manual Run
+
+on:
+  workflow_dispatch: # تشغيل يدوي بضغطة زر
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # للسماح برفع الملف في الـ Release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install google-genai
+
+      - name: Run Generator
+        run: python generate_dataset_1000.py # سيقرأ المفاتيح من داخل الملف مباشرة
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: "Data Bundle ${{ github.run_number }}"
+          files: |
+            training_dataset_1000.json
+            checkpoint.json
